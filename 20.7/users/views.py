@@ -31,8 +31,6 @@ class BaseRegisterView(CreateView):
 
         return redirect('coder', request.POST['username'])
 
-
-# Представление для активации зарегистрированного пользователя по коду на почту
 class CodeRandomView(CreateView):
     template_name = 'account/coder.html'
 

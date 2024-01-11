@@ -72,26 +72,18 @@ class PostDetail(DetailView):
     template_name = 'post_id.html'
     context_object_name = 'post_id'
 
-    # Представление для просмотра конкретного объявления
     def post_detail_view(request, pk):
         template_name = 'post/post_detail.html'
-        # получаем текущее объявление
         posts_id = get_object_or_404(Post, id=pk)
-        # список всех принятых откликов на это объявление
         comment = posts_id.comment.filter()
         new_comment = None
         if request.method == 'POST':
-            # Отклик оставлен
             comment_form = CommentForm(data=request.POST)
             if comment_form.is_valid():
-                # создаем объект отлика, но пока не сохраняем в БД
                 new_comment = comment_form.save(commit=False)
-                # привязываем отклик к текущему объявлению
                 new_comment.posts = posts_id
                 new_comment.user = request.user
-                # сохраняем отклик в БД
                 new_comment.save()
-                # отправляем уведомление автору о новом отклике на его объявление
                 post_comment_notification.delay(new_comment.pk)
         else:
             comment_form = CommentForm()
@@ -130,9 +122,7 @@ class PostCreateView(PermissionRequiredMixin, CreateView):
         author = User.objects.get(id=self.request.user.id)
         post = form.save(commit=False)
         post.author = author
-        # вызываем метод super, чтобы у объявления появился pk
         result = super().form_valid(form)
-        # уведомляем подписчиков о новом объявлении в их любимой категории
         posts_add_notification.delay(post.pk)
         return result
 
@@ -177,21 +167,15 @@ class CommentList(ListView):
     permission_required = ('ads.view_advertisement',)
     raise_exception = True
 
-    # Переопределяем функцию получения списка откликов
     def get_queryset(self):
         queryset = super().get_queryset()
-        # Используем наш класс фильтрации.
-        # Сохраняем нашу фильтрацию в объекте класса,
-        # чтобы потом добавить в контекст и использовать в шаблоне.
         self.filterset = CommentFilter(self.request.GET,
                                        queryset.filter(comment__author_comment=self.request.user),
                                      request=self.request)
-        # Возвращаем из функции отфильтрованный список откликов
         return self.filterset.qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Добавляем в контекст объект фильтрации.
         context['filterset'] = self.filterset
 
         return context
@@ -201,13 +185,10 @@ class CommentDeleteView(PermissionRequiredMixin, AccessMixin, DeleteView):
     form_class = CommentDeleteForm
     model = Comment
     template_name = 'posts/post_delete.html'
-    # требование права на удаление отклика
     permission_required = ('posts.delete_comment',)
     raise_exception = True
     success_url = reverse_lazy('comment')
 
-
-# Представление, принимающее отклик
 @permission_required('ads.change_reply', raise_exception=True)
 def comment_approve_view(request, pk):
     comment = Comment.objects.get(id=pk)
@@ -227,7 +208,6 @@ def subscribe(request, pk):
     return render(request, 'post/subscribe.html', context=data)
 
 
-# Представление для отписки от выбранной категории
 @permission_required('posts.change_category', raise_exception=True)
 def unsubscribe(request, pk):
     user = request.user

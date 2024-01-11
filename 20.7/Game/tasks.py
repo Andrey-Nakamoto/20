@@ -6,9 +6,7 @@ from django.core.mail import EmailMultiAlternatives
 from .models import *
 
 
-# функция отправки уведомлений подписчикам на почту о новом объявлении в любимой категории
 def subscribers_send_mails(pk, headline, subscribers_emails):
-    # указываем какой шаблон брать за основу и преобразовываем его в строку для отправки подписчику
     html_context = render_to_string(
         'mail/post_add_email.html',
         {
@@ -17,13 +15,9 @@ def subscribers_send_mails(pk, headline, subscribers_emails):
     )
 
     msg = EmailMultiAlternatives(
-        # тема письма
         subject= titles,
-        # тело пустое, потому что мы используем шаблон
         body='',
-        # адрес отправителя
         from_email=settings.DEFAULT_FROM_EMAIL,
-        # список адресатов
         to=subscribers_emails,
     )
 
@@ -31,10 +25,7 @@ def subscribers_send_mails(pk, headline, subscribers_emails):
     msg.send(fail_silently=False)
 
 
-# функция отправки на почту автору объявления уведомления
-# о том, что у него есть новый комментарий
 def post_comment_send_mail(pk, email):
-    # указываем какой шаблон брать за основу и преобразовываем его в строку для отправки подписчику
     html_context = render_to_string(
         'mail/coment_add_email.html',
         {
@@ -43,13 +34,9 @@ def post_comment_send_mail(pk, email):
     )
 
     msg = EmailMultiAlternatives(
-        # тема письма
         subject='Новый отклик',
-        # тело пустое, потому что мы используем шаблон
         body='',
-        # адрес отправителя
         from_email=settings.DEFAULT_FROM_EMAIL,
-        # список адресатов
         to=email,
     )
 
@@ -57,9 +44,7 @@ def post_comment_send_mail(pk, email):
     msg.send(fail_silently=False)
 
 
-# функция отправки на почту автору оклика уведомления о том, что его отклик принят
 def comment_author_send_mail(pk, email):
-    # указываем какой шаблон брать за основу и преобразовываем его в строку для отправки подписчику
     html_context = render_to_string(
         'mail/comment_author_email.html',
         {
@@ -68,13 +53,9 @@ def comment_author_send_mail(pk, email):
     )
 
     msg = EmailMultiAlternatives(
-        # тема письма
         subject='Отклик принят',
-        # тело пустое, потому что мы используем шаблон
         body='',
-        # адрес отправителя
         from_email=settings.DEFAULT_FROM_EMAIL,
-        # список адресатов
         to=email,
     )
 
@@ -82,7 +63,6 @@ def comment_author_send_mail(pk, email):
     msg.send(fail_silently=False)
 
 
-# задача, которая уведомляет о новом объявлении в любимом разделе
 @shared_task
 def posts_add_notification(pk):
     post = Post.objects.get(id=pk)
@@ -97,7 +77,6 @@ def posts_add_notification(pk):
     subscribers_send_mails(post.pk, post.titles, subscribers_emails)
 
 
-# задача, которая уведомляет о новом отклике на объявление
 @shared_task
 def post_comment_notification(pk):
     comment = Post.objects.get(id=pk)
@@ -106,7 +85,6 @@ def post_comment_notification(pk):
     post_comment_send_mail(post.pk, post_author_email)
 
 
-# задача, которая уведомляет о принятом отклике
 @shared_task
 def comment_approve_notification(pk):
     comment = Comment.objects.get(id=pk)
@@ -115,11 +93,9 @@ def comment_approve_notification(pk):
     comment_author_send_mail(post.pk, comment_author_email)
 
 
-# задача по еженедельной отправке сообщения подписчикам со списком новых объявлений за неделю
-# из категорий, на которые они подписаны
+
 @shared_task
 def my_job():
-    #  Your job processing logic here...
     today = datetime.datetime.now()
     week_ago = today - datetime.timedelta(days=7)
     ads = Post.objects.filter(created_at__gte=week_ago)

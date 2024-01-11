@@ -17,24 +17,11 @@ from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-6jev^tz$=5u1rbotvhs+kh=u6q&r@64e75tc_^p)3-jpdow_%r'
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 ALLOWED_HOSTS = []
-
-
-# Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -58,13 +45,10 @@ INSTALLED_APPS = [
 
 SITE_ID = 1
 
-DEFAULT_FROM_EMAIL = 'colif74@yandex.ru'
+DEFAULT_FROM_EMAIL = 'shelomencevandrey@yandex.ru'
 
 AUTHENTICATION_BACKENDS = [
-    # Needed to login by username in Django admin, regardless of `allauth`
     'django.contrib.auth.backends.ModelBackend',
-
-    # `allauth` specific authentication methods, such as login by e-mail
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
@@ -99,8 +83,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'Gammer.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -109,9 +91,6 @@ DATABASES = {
     }
 }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -129,8 +108,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
 LANGUAGES = [
     ('en-us', 'English'),
     ('ru', 'Русский')
@@ -147,15 +124,11 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -167,25 +140,18 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_FORMS = {'signup': 'Game.forms.BasicSignupForm'}
 
-EMAIL_HOST = 'smtp.yandex.ru'  # адрес сервера Яндекс-почты для всех один и тот же
-EMAIL_PORT = 465  # порт smtp сервера тоже одинаковый
-EMAIL_HOST_USER = 'colif74@yandex.ru'
-# ваше имя пользователя, например, если ваша почта user@yandex.ru,
-# то сюда надо писать user, иными словами, это всё то что идёт до собаки
-EMAIL_HOST_PASSWORD = os.getenv('mypossword')  # пароль от почты
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'shelomencevandrey@yandex.ru'
+EMAIL_HOST_PASSWORD = os.getenv('mypossword')
 EMAIL_USE_SSL = True
 ADMINS = [
-    ('Николай', 'colif74@gmail.com'),
-    # список всех админов в формате ('имя', 'их почта')
+    ('Андрей', 'Andrey1986@gmail.com'),
 ]
-SERVER_EMAIL = 'colif74@yandex.ru'
+SERVER_EMAIL = 'Andrey@gmail.ru'
 
-# формат даты, которую будет воспринимать наш задачник (вспоминаем модуль по фильтрам)
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
-
-# если задача не выполняется за 25 секунд, то она автоматически снимается,
-# можете поставить время побольше, но как правило, это сильно бьёт по производительности сервера
-APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
+APSCHEDULER_RUN_NOW_TIMEOUT = 25
 
 CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379'
